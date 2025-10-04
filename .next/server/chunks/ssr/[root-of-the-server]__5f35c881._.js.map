@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 14, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 18, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/theos/cprg306-assignments/app/week-4/page.js"],"sourcesContent":["import NewItem from \"./new-item\";\r\n\r\nexport default function Week4Page() {\r\n  return (\r\n    <main className=\"mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center p-6\">\r\n      <NewItem />\r\n    </main>\r\n  );\r\n}\r\n"],"names":[],"mappings":";;;;;AAAA;;;AAEe,SAAS;IACtB,qBACE,wQAAC;QAAK,WAAU;kBACd,cAAA,wQAAC,oKAAO;;;;;;;;;;AAGd","debugId":null}}]
+}
