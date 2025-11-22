@@ -1,8 +1,6 @@
-// app/week-9/shopping-list/new-item.js
 "use client";
 import { useState } from "react";
 
-/** Minimal stub; replace with your Week 7/8 component if you have it. */
 export default function NewItem({ onAddItem }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState(1);

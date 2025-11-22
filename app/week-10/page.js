@@ -1,81 +1,48 @@
 "use client";
 
+import { useUserAuth } from "./_utils/auth-context";
 import Link from "next/link";
-// Import the useUserAuth hook
-import { useUserAuth } from "../contexts/AuthContext";
-import { useState } from "react";
 
-export default function Week10() {
-  // Use the useUserAuth hook to get the user object and the login and logout functions
+export default function Page() {
   const { user, gitHubSignIn, firebaseSignOut } = useUserAuth();
 
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState("");
-
-  // Sign in to Firebase with GitHub authentication
-  async function handleSignIn() {
-    setErr("");
-    setLoading(true);
-    try {
-      await gitHubSignIn();
-    } catch (e) {
-      setErr(e?.message ?? "Sign-in failed");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // Sign out of Firebase
-  async function handleSignOut() {
-    setErr("");
-    setLoading(true);
-    try {
-      await firebaseSignOut();
-    } catch (e) {
-      setErr(e?.message ?? "Sign-out failed");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
-    <main className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold">Week 10</h1>
-
+    <main className="flex min-h-screen flex-col items-center justify-center bg-slate-100">
       {!user ? (
-        <>
+        <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-md text-center">
+          <h1 className="text-2xl font-semibold mb-4">
+            Welcome to the Shopping List App
+          </h1>
           <button
-            onClick={handleSignIn}
-            disabled={loading}
-            className="border rounded px-3 py-1 disabled:opacity-60"
+            onClick={gitHubSignIn}
+            className="px-4 py-2 rounded bg-slate-800 text-white hover:bg-slate-900"
           >
-            {loading ? "Signing in…" : "Sign in with GitHub"}
+            Login with GitHub
           </button>
-          {err && <p className="text-red-600">{err}</p>}
-        </>
+        </div>
       ) : (
-        <>
-          {/* Display some of the user's information */}
-          <p>
-            Welcome, <b>{user.displayName || user.email}</b>{" "}
-            {user.email && <span>({user.email})</span>}
-          </p>
+        <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-md text-center">
+          <h1 className="text-2xl font-semibold text-black mb-2">
+            Welcome, {user.displayName}
+          </h1>
+          <p className="mb-4 text-gray-700">Email: {user.email}</p>
 
-          <div className="flex gap-3">
-            <Link href="/week-10/shopping-list" className="underline">
-              Go to Shopping List →
-            </Link>
-            <button
-              onClick={handleSignOut}
-              disabled={loading}
-              className="border rounded px-3 py-1 disabled:opacity-60"
+          <button
+            onClick={firebaseSignOut}
+            className="mb-4 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+          >
+            Logout
+          </button>
+
+          <div>
+            <Link
+              href="/week-10/shopping-list"
+              className="inline-block px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
             >
-              {loading ? "Signing out…" : "Log out"}
-            </button>
+              Go to Shopping List
+            </Link>
           </div>
-
-          {err && <p className="text-red-600">{err}</p>}
-        </>
+        </div>
       )}
     </main>
   );

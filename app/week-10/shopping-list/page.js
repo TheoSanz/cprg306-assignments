@@ -1,67 +1,79 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useUserAuth } from "../_utils/auth-context";
+import { getItems, addItem } from "../_services/shopping-list-service";
 import NewItem from "../new-item";
 import ItemList from "../item-list";
 import MealIdeas from "../meal-ideas";
-import { getItems, addItem } from "../_services/shopping-list-service";
-import { useUserAuth } from "../_utils/auth-context"; // Import the auth context
 
 export default function Page() {
+  const { user } = useUserAuth();
   const [items, setItems] = useState([]);
   const [selectedItemName, setSelectedItemName] = useState("");
-  const { user } = useUserAuth(); // Get the authenticated user
 
-  const loadItems = async () => {
-    if (!user) return; // Ensure user is authenticated
-    const fetchedItems = await getItems(user.uid);
-    setItems(fetchedItems);
-  };
-
+  // Load items from Firestore for the logged-in user
   useEffect(() => {
-    loadItems();
-  }, [user]); // Reload items when user changes
+    if (!user) return;
 
+    const loadItems = async () => {
+      try {
+        const fetchedItems = await getItems(user.uid);
+        setItems(fetchedItems);
+      } catch (error) {
+        console.error("Error loading items:", error);
+      }
+    };
+
+    loadItems();
+  }, [user]);
+
+  // Add item to Firestore and then to local state
   const handleAddItem = async (newItem) => {
-    if (!user) return; // Ensure user is authenticated
-    console.log("New item to add:", newItem); // Debugging: Log the newItem
+    if (!user) return;
 
     try {
       const itemId = await addItem(user.uid, newItem);
-      setItems((prevItems) => [...prevItems, { id: itemId, ...newItem }]);
+      setItems((prev) => [...prev, { id: itemId, ...newItem }]);
     } catch (error) {
-      console.error("Error adding item:", error); // Log Firestore errors
+      console.error("Error adding item:", error);
     }
   };
 
+  // Handle selecting an item for MealIdeas
   const handleItemSelect = (item) => {
-    const cleanedName = item.name.split(",")[0].trim().replace(/[\u{1F600}-\u{1F6FF}]/gu, "");
+    const cleanedName = item.name
+      .split(",")[0]
+      .trim()
+      .replace(/[\u{1F600}-\u{1F6FF}]/gu, "");
     setSelectedItemName(cleanedName);
   };
 
+  // Not signed in
   if (!user) {
-    return <p>Loading...</p>; // Show a loading state if user is not authenticated
+    return (
+      <main className="p-6">
+        Please sign in to view your shopping list. <br />
+        <a href="/week-10" className="underline">
+          Back to Week 10
+        </a>
+      </main>
+    );
   }
 
+  // Signed in – use Code 2 style/layout
   return (
-    <div className="flex flex-col lg:flex-row p-5 bg-gray-900 text-white min-h-screen">
-      <div className="flex-1 lg:mr-5 mb-5 lg:mb-0">
-        <h1 className="text-3xl mb-5">Shopping List</h1>
-        <div className="flex flex-col lg:flex-row">
-          <div className="flex-1 lg:mr-5">
-            <NewItem onAddItem={handleAddItem} />
-          </div>
-        </div>
-        <div className="flex flex-col lg:flex-row mt-5">
-          <div className="flex-1 lg:mr-5">
-            <ItemList items={items} onItemSelect={handleItemSelect} />
-          </div>
-          <div className="flex-1 lg:ml-5">
-            <h2 className="text-2xl mb-4">Meal Ideas</h2>
-            <MealIdeas ingredient={selectedItemName} />
-          </div>
-        </div>
-      </div>
-    </div>
+    <main className="p-6 space-y-6">
+      <h1 className="text-2xl font-bold">Shopping List</h1>
+
+      <NewItem onAddItem={handleAddItem} />
+
+      <ItemList items={items} onItemSelect={handleItemSelect} />
+
+      <section className="space-y-2">
+        <h2 className="text-xl font-semibold">Meal Ideas</h2>
+        <MealIdeas ingredient={selectedItemName} />
+      </section>
+    </main>
   );
 }
